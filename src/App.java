@@ -58,7 +58,7 @@ public class App {
     static int menu() {
         cabecalho();
         System.out.println("1 - Listar todos os produtos");
-        System.out.println("2 - Carregar produtos por nome/descrição");
+        System.out.println("2 - Carregar produtos por nome/descricao");
         System.out.println("3 - Carregar produtos por id");
         System.out.println("4 - Procurar produto, por nome");
         System.out.println("5 - Procurar produto, por id");
@@ -130,18 +130,30 @@ public class App {
     /** Localiza um produto na árvore de produtos organizados por id, a partir do código de produto informado pelo usuário, e o retorna. 
      *  Em caso de não encontrar o produto, retorna null */
     static Produto localizarProdutoID(ABB<Integer, Produto> produtosCadastrados) {
+
+        cabecalho();
+        System.out.println("Digite o ID do produto:");
+        int id = Integer.parseInt(teclado.nextLine());
+    
+        Produto produto = localizarProduto(produtosCadastrados, id);
         
-        // TODO
-    	return null;
+        return produto;
     }
+    
     
     /** Localiza um produto na árvore de produtos organizados por nome, a partir do nome de produto informado pelo usuário, e o retorna. 
      *  A busca não é sensível ao caso. Em caso de não encontrar o produto, retorna null */
     static Produto localizarProdutoNome(ABB<String, Produto> produtosCadastrados) {
+
+        cabecalho();
+        System.out.println("Digite o nome do produto:");
+        String nome = teclado.nextLine().toLowerCase();
+    
+        Produto produto = localizarProduto(produtosCadastrados, nome);
         
-    	// TODO
-    	return null;
+        return produto;
     }
+    
     
     private static void mostrarProduto(Produto produto) {
     	
@@ -173,7 +185,7 @@ public class App {
             opcao = menu();
             switch (opcao) {
                 case 1 -> listarTodosOsProdutos(produtosCadastradosPorNome);
-                case 2 -> produtosCadastradosPorNome = lerProdutos(nomeArquivoDados, (p -> p.descricao));
+                case 2 -> produtosCadastradosPorNome = lerProdutos(nomeArquivoDados, (p -> p.descricao.toLowerCase()));
                 case 3 -> produtosCadastradosPorId = lerProdutos(nomeArquivoDados, (p -> p.idProduto));
                 case 4 -> mostrarProduto(localizarProdutoNome(produtosCadastradosPorNome));
                 case 5 -> mostrarProduto(localizarProdutoID(produtosCadastradosPorId));
