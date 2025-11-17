@@ -132,11 +132,30 @@ public class ABB<K, V> implements IMapeamento<K, V>{
      * 
      * @return o tamanho atualizado da árvore após a execução da operação de inserção.
      */
-    public int inserir(K chave, V item) {
-    	
-    	// TODO
-        return tamanho;
+public int inserir(K chave, V item) {
+    raiz = inserir(raiz, chave, item);
+    return tamanho;
+}
+
+private No<K,V> inserir(No<K,V> raizArvore, K chave, V item) {
+    
+    if (raizArvore == null) {
+        tamanho++;
+        return new No<K,V>(chave, item);
     }
+
+    int cmp = comparador.compare(chave, raizArvore.getChave());
+
+    if (cmp < 0)
+        raizArvore.setEsquerda(inserir(raizArvore.getEsquerda(), chave, item));
+    else if (cmp > 0)
+        raizArvore.setDireita(inserir(raizArvore.getDireita(), chave, item));
+    else
+        raizArvore.setItem(item); // chave já existente → atualiza
+
+    return raizArvore;
+}
+
 
     @Override 
     public String toString(){
@@ -160,11 +179,70 @@ public class ABB<K, V> implements IMapeamento<K, V>{
      * @param chave a chave do item que deverá ser localizado e removido da árvore.
      * @return o valor associado ao item removido.
      */
-    public V remover(K chave) {
-    	
-    	// TODO
-    	return null;
+public V remover(K chave) {
+    inicio = System.nanoTime();
+    comparacoes = 0;
+
+    No<K,V>[] resposta = remover(raiz, chave);
+    raiz = resposta[0];
+    V removido = resposta[1] != null ? resposta[1].getItem() : null;
+
+    termino = System.nanoTime();
+    if (removido == null)
+        throw new NoSuchElementException("Chave não encontrada para remoção!");
+
+    tamanho--;
+    return removido;
+}
+
+// Retorna um vetor onde:
+// [0] = nova raiz da subárvore
+// [1] = nó removido
+@SuppressWarnings("unchecked")
+private No<K,V>[] remover(No<K,V> raizArvore, K chave) {
+
+    if (raizArvore == null)
+        return (No<K,V>[]) new No[]{null, null};
+
+    int cmp = comparador.compare(chave, raizArvore.getChave());
+    comparacoes++;
+
+    if (cmp < 0) {
+        No<K,V>[] r = remover(raizArvore.getEsquerda(), chave);
+        raizArvore.setEsquerda(r[0]);
+        return (No<K,V>[]) new No[]{raizArvore, r[1]};
     }
+    else if (cmp > 0) {
+        No<K,V>[] r = remover(raizArvore.getDireita(), chave);
+        raizArvore.setDireita(r[0]);
+        return (No<K,V>[]) new No[]{raizArvore, r[1]};
+    }
+    else {
+        // Encontrou o nó
+        if (raizArvore.getEsquerda() == null)
+            return (No<K,V>[]) new No[]{raizArvore.getDireita(), raizArvore};
+
+        if (raizArvore.getDireita() == null)
+            return (No<K,V>[]) new No[]{raizArvore.getEsquerda(), raizArvore};
+
+        // Caso 3: dois filhos
+        No<K,V> sucessor = menor(raizArvore.getDireita());
+        raizArvore.setItem(sucessor.getItem());
+        raizArvore.setChave(sucessor.getChave());
+
+        No<K,V>[] r = remover(raizArvore.getDireita(), sucessor.getChave());
+        raizArvore.setDireita(r[0]);
+
+        return (No<K,V>[]) new No[]{raizArvore, sucessor};
+    }
+}
+
+private No<K,V> menor(No<K,V> n) {
+    while (n.getEsquerda() != null)
+        n = n.getEsquerda();
+    return n;
+}
+
 
 	@Override
 	public int tamanho() {
