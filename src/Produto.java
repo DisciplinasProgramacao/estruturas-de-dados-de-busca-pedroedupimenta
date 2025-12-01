@@ -1,3 +1,4 @@
+
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +27,6 @@ public abstract class Produto implements Comparable<Produto>{
 			this.precoCusto = precoCusto;
 			this.margemLucro = margemLucro;
 			idProduto = ultimoID++;
-
 		} else {
 			throw new IllegalArgumentException("Valores inválidos para os dados do produto.");
 		}
@@ -70,8 +70,8 @@ public abstract class Produto implements Comparable<Produto>{
     	
     	NumberFormat moeda = NumberFormat.getCurrencyInstance();
     	
-		return String.format("IDENTIFICADOR: " + idProduto + " NOME: " + descricao + ": " + moeda.format(valorDeVenda()));
-	}
+    	return String.format("ID: " + idProduto + " NOME: " + descricao + ": " + moeda.format(valorDeVenda()));
+    }
     
     @Override
     /**
@@ -97,8 +97,22 @@ public abstract class Produto implements Comparable<Produto>{
         }
     }
     
+    @Override
+    /**
+     * Comparação padrão do produto: identificador/hash code.
+     * Retorna um valor negativo se este produto tem um identificador anterior ao outro produto,
+     * valor positivo se o identificador é posterior ao do outro produto. Para o mesmo produto, o
+     * retorno é 0.
+     * @param outro Produto a ser comparado
+     * @return Int de acordo com a regra padrão de Comparable (descrita acima)
+     */
     public int compareTo(Produto outro){
-    	return this.descricao.compareTo(outro.descricao);
+    	if (this.idProduto == outro.idProduto)
+    		return 0;
+    	else if (this.idProduto < outro.idProduto)
+    		return -1;
+    	else
+    		return 1;
     }
     
     /**
